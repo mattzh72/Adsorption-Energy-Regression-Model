@@ -1,0 +1,67 @@
+print(__doc__)
+
+
+# Code source: Jaques Grobler
+# License: BSD 3 clause
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn import datasets, linear_model
+
+
+#ALL THIS NEEDS TO BE ALTERED DEPENDING ON THE DATA
+# Load the diabetes dataset
+diabetes = datasets.load_diabetes()
+
+
+# Use only one feature
+diabetes_X = diabetes.data[:, np.newaxis, 2]
+
+
+
+# Split the data into training/testing sets
+x_train = X[:-50]
+x_test = X[-50:]
+y_train = Y[:-50]
+y_test = Y[-50:]
+z_train = Z[:-50]
+z_test = Z[-50:]
+# makes a new array to put xyz into one value
+trainArr = []
+testArray =[]
+
+for(i=0, i<950; i++){
+    trainArr[i] = x_train[i]+y_train[i]+z_train[i]
+}
+for(i=950<1000; i++){
+    testArr[i] = x_test[i]+y_test[i]+z_test[i]
+}
+
+# Split the targets into training/testing sets
+adsorption_train = data.adsorption[:-50]
+adsorption_test = data.adsorption[-50:]
+
+# Create linear regression object
+regr = linear_model.LinearRegression()
+
+# Train the model using the training sets
+regr.fit(, diabetes_y_train)
+
+# The coefficients
+print('Coefficients: \n', regr.coef_)
+# The mean squared error
+print("Mean squared error: %.2f"
+      % np.mean((regr.predict(test_Arr) - adsorption_test) ** 2))
+# Explained variance score: 1 is perfect prediction
+print('Variance score: %.2f' % regr.score(testArr, adsorption_test))
+
+# Plot outputs
+plt.scatter(testArr, adsorption_test,  color='black')
+plt.plot(test_Arr, regr.predict(test_Arr), color='blue',
+         linewidth=3)
+
+plt.xticks(())
+plt.yticks(())
+
+plt.show()
