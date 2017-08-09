@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn import datasets, linear_model
 from sklearn.linear_model import BayesianRidge, LinearRegression
-
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import r2_score
 
 ##A Simple linear Regression
 def regress_simple(X, y):
@@ -72,4 +73,27 @@ def regress_Bayesian_ridge(X, y):
     
 
 
+##A knn Regression
+def regress_knn(X, y, neighbors):
+    SPLIT_FACTOR = 10
+    
+    # Split the data into training/testing sets
+    X_train = X[:-SPLIT_FACTOR]
+    X_test = X[-SPLIT_FACTOR:]
 
+    # Split the targets into training/testing sets
+    y_train = y[:-SPLIT_FACTOR]
+    y_test = y[-SPLIT_FACTOR:]  
+    
+    # Create knn regression object
+    regr = KNeighborsRegressor(61, "distance")
+    # Train the model using the training sets
+    regr.fit(X_train, y_train)
+
+    print("Mean squared error: %.2f" % np.mean((regr.predict(X_test) - y_test) ** 2))
+    # Explained variance score: 1 is perfect prediction
+    print('Variance score: %.2f' % regr.score(X_test, y_test))
+    print(regr.score(X_test, y_test))
+    
+    return regr.score(X_test, y_test)
+    
