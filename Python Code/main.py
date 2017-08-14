@@ -1,7 +1,11 @@
 from extract import extract_molecular_data, extract_molecular_distances
 from preprocess import encode_data
+from preprocess import label_data
+
 from regress import regress_knn
+from regress import classify_knn
 from regress import regress_simple
+from regress import regress_Bayesian_ridge
 import numpy as np
 
 
@@ -33,7 +37,10 @@ for i in range(len(data)):
     X.append(np.append(encodedMolecules[i], averageDistance))
     y.append(molecule[2])
     
-regress_knn(X, y, 1)
+#print(label_data(formulas))
+#TODO: label_data produces array of floats, may not be compatible... 
+classify_knn(label_data(formulas), y)
+#regress_knn(X, y)
     
 #bestScore = 0
 #bestBucket = 1

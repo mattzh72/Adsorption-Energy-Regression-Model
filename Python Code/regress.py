@@ -5,6 +5,9 @@ from sklearn.linear_model import BayesianRidge, LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import r2_score
 
+from sklearn.neighbors import KNeighborsClassifier
+
+
 ##A Simple linear Regression
 def regress_simple(X, y):
     # Split the data into training/testing sets
@@ -43,12 +46,12 @@ def regress_simple(X, y):
 ##A Bayesian Ridge Linear Regression
 def regress_Bayesian_ridge(X, y):
     # Split the data into training/testing sets
-    X_train = X[:-50]
-    X_test = X[-50:]
+    X_train = X[:-10]
+    X_test = X[-10:]
 
     # Split the targets into training/testing sets
-    y_train = y[:-50]
-    y_test = y[-50:]  
+    y_train = y[:-10]
+    y_test = y[-10:]  
     
     clf = linear_model.BayesianRidge()
     clf.fit(X_train, y_train)
@@ -70,11 +73,9 @@ def regress_Bayesian_ridge(X, y):
     plt.legend(loc="best", prop=dict(size=12))
 
     plt.show()
-    
-
 
 ##A knn Regression
-def regress_knn(X, y, neighbors):
+def regress_knn(X, y):
     SPLIT_FACTOR = 10
     
     # Split the data into training/testing sets
@@ -96,4 +97,10 @@ def regress_knn(X, y, neighbors):
     print(regr.score(X_test, y_test))
     
     return regr.score(X_test, y_test)
+    
+def classify_knn(X, y):
+    neigh = KNeighborsClassifier(n_neighbors=61)
+    neigh.fit(X, y) 
+    print(neigh.score(X, y))
+    
     
