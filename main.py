@@ -3,11 +3,11 @@ from preprocess import encode_data
 from preprocess import label_data
 
 from regress import regress_knn
-from regress import classify_knn
 from regress import regress_simple
 from regress import regress_Bayesian_ridge
 from regress import regress_SVR
 from regress import kernel_ridge_regress
+
 import numpy as np
 
 

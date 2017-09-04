@@ -9,8 +9,10 @@ from sklearn.svm import SVR
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.model_selection import GridSearchCV
 
-from sklearn.neighbors import KNeighborsClassifier
-
+parameter_candidates = [
+  {'C': [1, 10, 100, 1000], 'kernel': ['linear']},
+  {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf'], 'alpha': [0.0001,0.001,0.01,0.1,1,10]},
+]
 
 ##A Simple linear Regression
 def regress_simple(X, y):
@@ -107,9 +109,5 @@ def regress_knn(X, y):
     print(scores)
     print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
     
-def classify_knn(X, y):
-    neigh = KNeighborsClassifier(n_neighbors=61)
-    neigh.fit(X, y) 
-    print(neigh.score(X, y))
     
     

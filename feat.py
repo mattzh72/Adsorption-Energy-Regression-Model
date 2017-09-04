@@ -32,20 +32,39 @@ def pad_array(x, shape, fill=0, both=False):
   x = np.pad(x, pad, mode='constant', constant_values=fill)
   return x
 
-def coulomb_matrix(atoms):
-    numAtoms = len(atoms)
+def coulomb_matrix(molecule):
+    numAtoms = len(molecule.formula)
     matrix = np.zeros((numAtoms, numAtoms))
     
     for i in range(numAtoms):
         for j in range(numAtoms):
             if i == j:
-                matrix[i, j] = 0.5 * z[i]**2.4
+                matrix[i, j] = 0.5 * molecule.formula[i]**2.4
             elif i < j:
-                matrix[i, j] = (z[i] * z[j]) / d[i, j]
+                matrix[i, j] = (molecule.formula[i] * molecule.formula[j]) / calculate_atom_distance(molecule.positions[i], molecule.positions[j])
                 matrix[j, i] = m[i, j]
             else:
                 continue
 
-    rval = np.asarray(rval)
-    return rval
+    return matrix
+
+def calculate_atom_distance(p1, p2):
+    return calculateDistance(p1, p2)
+    
+    
+def calculateDistance(p1, p2):
+    distance = None
+    squared_deltas = []
+    
+    for i in range(len(p1)):
+        delta = math.fabs(np.subtract(p1[i], p2[i]))
+        delta_squared = delta * delta
+        squared_deltas.append(delta_squared)
+               
+    delta_sums = 0
+    
+    for delta in squared_deltas:
+        delta_sums += delta
+        
+    return math.sqrt(delta_sums)
 

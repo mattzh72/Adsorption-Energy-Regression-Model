@@ -11,7 +11,7 @@ def extract_molecular_data(dbName):
     data = []
     
     for row in db.select(relaxed = True):
-        let molecule = {'formula': row.formula, 'positions': row.positions, 'energy': row.energy}
+        molecule = {'formula': row.formula, 'positions': row.positions, 'energy': row.energy}
         data.append(molecule)
 
     return data
