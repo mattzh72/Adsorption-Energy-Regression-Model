@@ -1,6 +1,5 @@
 from ase.db import connect
 import numpy as np
-import math
 
 #Extracts molecular data
 #Returns an array of dictionaries containing molecular formula, positions, and energies
@@ -11,7 +10,7 @@ def extract_molecular_data(dbName):
     data = []
     
     for row in db.select(relaxed = True):
-        molecule = {'formula': row.formula, 'positions': row.positions, 'energy': row.energy}
+        molecule = {'formula': row.numbers, 'positions': row.positions, 'energy': row.energy}
         data.append(molecule)
 
     return data

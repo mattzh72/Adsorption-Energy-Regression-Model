@@ -10,8 +10,7 @@ from sklearn.kernel_ridge import KernelRidge
 from sklearn.model_selection import GridSearchCV
 
 parameter_candidates = [
-  {'C': [1, 10, 100, 1000], 'kernel': ['linear']},
-  {'C': [1, 10, 100, 1000], 'gamma': [0.001, 0.0001], 'kernel': ['rbf'], 'alpha': [0.0001,0.001,0.01,0.1,1,10]},
+  {'gamma': [0.001, 0.0001], 'kernel': ['rbf', 'laplacian'], 'alpha': [0.0001,0.001,0.01,0.1,1,10]},
 ]
 
 ##A Simple linear Regression
@@ -29,26 +28,7 @@ def regress_simple(X, y):
 
     # Train the model using the training sets
     regr.fit(X, y)
-
-#    # The coefficients
-#    print('Coefficients: \n', regr.coef_)
-#    # The mean squared error
-#    print("Mean squared error: %.2f"
-#          % np.mean((regr.predict(X_test) - y_test) ** 2))
-#    # Explained variance score: 1 is perfect prediction
-#    print('Variance score: %.2f' % regr.score(X_test, y_test))
-#    print(regr.score(X_test, y_test))
-#
-#    # Plot outputs
-#    plt.scatter(1, y_test,  color='black')
-#    plt.plot(X_test, regr.predict(X_test), color='blue', linewidth=3)
-#
-#    plt.xticks(())
-#    plt.yticks(())
-#
-#    plt.show()
     
-
 ##A Bayesian Ridge Linear Regression
 def regress_Bayesian_ridge(X, y):
     # Split the data into training/testing sets
@@ -83,10 +63,17 @@ def regress_SVR(X, y, k):
     print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
     
 def kernel_ridge_regress(X, y):
-    clf = KernelRidge(kernel='chi2')
-    clf.fit(X, y) 
+    clf = GridSearchCV(estimator=KernelRidge(),param_grid=parameter_candidates,n_jobs=-1)
+    clf.fit(X, y)
     print(clf.score(X, y))
-#    scores = cross_validation.cross_val_score(clf, X, y, cv=5)
+    
+    print('Best score:',clf.best_score_)
+    print('Best Kernel:',clf.best_estimator_.kernel)
+    print('Best Gamma:',clf.best_estimator_.gamma)
+    print('Best Alpha:',clf.best_estimator_.alpha)
+
+    
+#    scores = cross_validation.cross_val_score(clf, X, y, cv=2)
 #    print(scores)
 #    print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
 
