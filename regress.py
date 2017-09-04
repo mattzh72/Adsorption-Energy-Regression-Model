@@ -8,10 +8,14 @@ from sklearn import cross_validation
 from sklearn.svm import SVR
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.grid_search import GridSearchCV
+from sklearn.grid_search import RandomizedSearchCV
 
 parameter_candidates = [
-  {'gamma': [0.001, 0.0001], 'kernel': ['rbf', 'laplacian'], 'alpha': [0.0001,0.001,0.01,0.1,1,10]},
+  {'gamma': [0.001, 0.0001], 'kernel': ['rbf', 'laplacian'], 'alpha': [0.0001,0.001,0.01,0.1,1]},
 ]
+
 
 ##A Simple linear Regression
 def regress_simple(X, y):
@@ -44,18 +48,6 @@ def regress_Bayesian_ridge(X, y):
     print(scores)
     print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
     
-#    lw = 2
-#    plt.figure(figsize=(6, 5))
-#    plt.title("Weights of the model")
-#    plt.plot(y, color='gold', linewidth=lw, label="Ground truth")
-#    plt.plot(clf.coef_, color='lightgreen', linewidth=lw,
-#             label="Bayesian Ridge estimate")
-#    plt.xlabel("Molecules")
-#    plt.ylabel("Adsorption Energy")
-#    plt.legend(loc="best", prop=dict(size=12))
-#
-#    plt.show()
-
 def regress_SVR(X, y, k):
     svr = SVR(kernel=k, degree=5)
     scores = cross_validation.cross_val_score(svr, X, y, cv=3)
@@ -63,14 +55,14 @@ def regress_SVR(X, y, k):
     print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
     
 def kernel_ridge_regress(X, y):
-    clf = GridSearchCV(estimator=KernelRidge(),param_grid=parameter_candidates,n_jobs=-1)
-    clf.fit(X, y)
-    print(clf.score(X, y))
+    clf = GridSearchCV(estimator=KernelRidge(),param_grid=parameter_candidates)
+#    clf.fit(X, y)
+#    print(clf.score(X, y))
     
-    print('Best score:',clf.best_score_)
-    print('Best Kernel:',clf.best_estimator_.kernel)
-    print('Best Gamma:',clf.best_estimator_.gamma)
-    print('Best Alpha:',clf.best_estimator_.alpha)
+    print('Best score:', clf.best_score_)
+    print('Best Kernel:', clf.best_estimator_.kernel)
+    print('Best Gamma:', clf.best_estimator_.gamma)
+    print('Best Alpha:', clf.best_estimator_.alpha)
 
     
 #    scores = cross_validation.cross_val_score(clf, X, y, cv=2)
