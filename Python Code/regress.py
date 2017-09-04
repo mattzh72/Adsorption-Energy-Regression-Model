@@ -4,6 +4,10 @@ from sklearn import datasets, linear_model
 from sklearn.linear_model import BayesianRidge, LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import r2_score
+from sklearn import cross_validation
+from sklearn.svm import SVR
+from sklearn.kernel_ridge import KernelRidge
+from sklearn.model_selection import GridSearchCV
 
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -53,30 +57,40 @@ def regress_Bayesian_ridge(X, y):
     y_train = y[:-10]
     y_test = y[-10:]  
     
-    clf = linear_model.BayesianRidge()
-    clf.fit(X_train, y_train)
-    print(clf.score(X_test, y_test))
+    clf = linear_model.BayesianRidge(n_iter=300, tol=0.00001, alpha_1=200, alpha_2=200, fit_intercept=False, normalize=True, copy_X=True, verbose=True)
+    scores = cross_validation.cross_val_score(clf, X, y, cv=5)
+    print(scores)
+    print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
     
-    ols = LinearRegression()
-    ols.fit(X_train, y_train)
-    print(ols.score(X_test, y_test))
-    
-    lw = 2
-    plt.figure(figsize=(6, 5))
-    plt.title("Weights of the model")
+#    lw = 2
+#    plt.figure(figsize=(6, 5))
+#    plt.title("Weights of the model")
 #    plt.plot(y, color='gold', linewidth=lw, label="Ground truth")
-    plt.plot(clf.coef_, color='lightgreen', linewidth=lw,
-             label="Bayesian Ridge estimate")
-    plt.plot(ols.coef_, color='navy', linestyle='--', label="OLS estimate")
-    plt.xlabel("Molecules")
-    plt.ylabel("Adsorption Energy")
-    plt.legend(loc="best", prop=dict(size=12))
+#    plt.plot(clf.coef_, color='lightgreen', linewidth=lw,
+#             label="Bayesian Ridge estimate")
+#    plt.xlabel("Molecules")
+#    plt.ylabel("Adsorption Energy")
+#    plt.legend(loc="best", prop=dict(size=12))
+#
+#    plt.show()
 
-    plt.show()
+def regress_SVR(X, y, k):
+    svr = SVR(kernel=k, degree=5)
+    scores = cross_validation.cross_val_score(svr, X, y, cv=3)
+    print(scores)
+    print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
+    
+def kernel_ridge_regress(X, y):
+    clf = KernelRidge(kernel='chi2')
+    clf.fit(X, y) 
+    print(clf.score(X, y))
+#    scores = cross_validation.cross_val_score(clf, X, y, cv=5)
+#    print(scores)
+#    print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
 
 ##A knn Regression
 def regress_knn(X, y):
-    SPLIT_FACTOR = 10
+    SPLIT_FACTOR = 50
     
     # Split the data into training/testing sets
     X_train = X[:-SPLIT_FACTOR]
@@ -88,15 +102,10 @@ def regress_knn(X, y):
     
     # Create knn regression object
     regr = KNeighborsRegressor(61, "distance")
-    # Train the model using the training sets
-    regr.fit(X_train, y_train)
 
-    print("Mean squared error: %.2f" % np.mean((regr.predict(X_test) - y_test) ** 2))
-    # Explained variance score: 1 is perfect prediction
-    print('Variance score: %.2f' % regr.score(X_test, y_test))
-    print(regr.score(X_test, y_test))
-    
-    return regr.score(X_test, y_test)
+    scores = cross_validation.cross_val_score(regr, X, y, cv=5)
+    print(scores)
+    print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
     
 def classify_knn(X, y):
     neigh = KNeighborsClassifier(n_neighbors=61)

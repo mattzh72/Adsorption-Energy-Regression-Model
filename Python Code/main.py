@@ -6,6 +6,8 @@ from regress import regress_knn
 from regress import classify_knn
 from regress import regress_simple
 from regress import regress_Bayesian_ridge
+from regress import regress_SVR
+from regress import kernel_ridge_regress
 import numpy as np
 
 
@@ -39,8 +41,8 @@ for i in range(len(data)):
     
 #print(label_data(formulas))
 #TODO: label_data produces array of floats, may not be compatible... 
-classify_knn(label_data(formulas), y)
-#regress_knn(X, y)
+#classify_knn(label_data(formulas), y)
+kernel_ridge_regress(X, y)
     
 #bestScore = 0
 #bestBucket = 1

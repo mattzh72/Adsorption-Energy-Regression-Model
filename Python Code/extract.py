@@ -29,11 +29,12 @@ def extract_molecular_distances(dbName):
     molecules = []
     
     for row in db.select(relaxed = True):
-        molecule = []
-        molecule.append(row.formula)
-        molecule.append(calculateDistances(row.positions[-1], row.positions))
-        molecule.append(row.energy)  
-        molecules.append(molecule)
+        if (row.energy < 100):
+            molecule = []
+            molecule.append(row.formula)
+            molecule.append(calculateDistances(row.positions[-1], row.positions))
+            molecule.append(row.energy)  
+            molecules.append(molecule)
         
     return molecules
 
