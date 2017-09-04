@@ -3,21 +3,19 @@ import numpy as np
 import math
 
 #Extracts molecular data
-#Returns a dictionary with arrays of energy, position, and molecular formula information
-#Indices of arrays correspond to one type of molecule
+#Returns an array of dictionaries containing molecular formula, positions, and energies
+#Indices
 def extract_molecular_data(dbName):
     db = connect(dbName)
 
-    energies = []   
-    positions = []
-    molecules = []
+    data = []
     
     for row in db.select(relaxed = True):
-        energies.append(row.energy)
-        positions.append(row.positions)
-        molecules.append(row.formula)
-        
-    return {'energies': energies, 'positions': positions, 'molecules': molecules}
+        let molecule = {'formula': row.formula, 'positions': row.positions, 'energy': row.energy}
+        data.append(molecule)
+
+    return data
+
 
 #Extracts molecule data
 #Returns as an array of arrays 
