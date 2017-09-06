@@ -10,7 +10,12 @@ def extract_molecular_data(dbName):
     data = []
     
     for row in db.select(relaxed = True):
-        molecule = {'formula': row.numbers, 'positions': row.positions, 'energy': row.energy}
+        atoms = []
+        for i in range(len(row.numbers)):
+            atom = {'num': row.numbers[i], 'position':row.positions[i]}
+            atoms.append(atom)
+            
+        molecule = {'atoms': atoms, 'energy': row.energy}
         data.append(molecule)
 
     return data

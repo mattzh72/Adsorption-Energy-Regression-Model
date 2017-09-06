@@ -20,15 +20,15 @@ def pad_array(x, shape, fill=0, both=False):
     return x
 
 def coulomb_matrix(molecule):
-    numAtoms = len(molecule["formula"])
+    numAtoms = len(molecule["atoms"])
     matrix = np.zeros((numAtoms, numAtoms))
     
     for i in range(numAtoms):
         for j in range(numAtoms):
             if i == j:
-                matrix[i, j] = 0.5 * molecule["formula"][i]**2.4
+                matrix[i, j] = 0.5 * molecule["atoms"][i]["num"]**2.4
             elif i < j:
-                matrix[i, j] = (molecule["formula"][i] * molecule["formula"][j]) / calculate_atom_distance(molecule["positions"][i], molecule["positions"][j])
+                matrix[i, j] = (molecule["atoms"][i]["num"] * molecule["atoms"][j]["num"]) / calculate_atom_distance(molecule["atoms"][i]["position"], molecule["atoms"][j]["position"])
                 matrix[j, i] = matrix[i, j]
             else:
                 continue
@@ -66,11 +66,11 @@ def calculate_eigenvalues(molecule, max_num_atoms):
     
     return f
 
-def featurize(molecules):
+def featurize(molecules): 
     max_atoms = -1
-    for i in range(len(molecules)):
-        if (len(molecules[i]["formula"]) > max_atoms):
-            max_atoms = len(molecules[i]["formula"])
+    for mol in molecules:
+        if (len(mol["atoms"]) > max_atoms):
+            max_atoms = len(mol["atoms"])
     
     features = []
     for mol in molecules:
