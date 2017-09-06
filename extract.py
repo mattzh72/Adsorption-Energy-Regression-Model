@@ -1,5 +1,6 @@
 from ase.db import connect
 import numpy as np
+import math
 
 #Extracts molecular data
 #Returns an array of dictionaries containing molecular formula, positions, and energies
@@ -18,7 +19,8 @@ def extract_molecular_data(dbName, dx=0):
                 continue
             atom = {'num': row.numbers[i], 'position':row.positions[i]}
             atoms.append(atom)
-            
+        print("orig size: %d  after filtering %d" % (sz, len(atoms)))
+#        print(atoms)
         molecule = {'atoms': atoms, 'energy': row.energy}
         data.append(molecule)
 
@@ -29,9 +31,10 @@ def calculate_distance(row, atomA, atomB):
         return 0
     p1 = row.positions[atomA]
     p2 = row.positions[atomB]
-    d = 0;
+    d = 0.0;
     for i in range(3):
         d = d + (p1[i]-p2[i])**2
+#    print ("dist %5.2f" % (math.sqrt(d)))
     return math.sqrt(d) 
 
 #Extracts molecule data

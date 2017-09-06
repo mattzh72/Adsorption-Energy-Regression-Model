@@ -46,24 +46,25 @@ def regress_Bayesian_ridge(X, y):
     clf = linear_model.BayesianRidge(n_iter=300, tol=0.00001, alpha_1=200, alpha_2=200, fit_intercept=False, normalize=True, copy_X=True, verbose=True)
     scores = cross_validation.cross_val_score(clf, X, y, cv=5)
     print(scores)
-    print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
+    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
     
 def regress_SVR(X, y, k):
     svr = SVR(kernel=k, degree=5)
     scores = cross_validation.cross_val_score(svr, X, y, cv=3)
     print(scores)
-    print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
+    print ("Accuracy: %0.2f \(+/- %0.2f\)" % (scores.mean(), scores.std() / 2))
     
 def kernel_ridge_regress(X, y):
     clf = GridSearchCV(estimator=KernelRidge(),param_grid=parameter_candidates)
-#    clf.fit(X, y)
-#    print(clf.score(X, y))
-    
+    clf.fit(X, y)
+    print(clf.score(X, y))
+
+"""
     print('Best score:', clf.best_score_)
     print('Best Kernel:', clf.best_estimator_.kernel)
     print('Best Gamma:', clf.best_estimator_.gamma)
     print('Best Alpha:', clf.best_estimator_.alpha)
-
+"""
     
 #    scores = cross_validation.cross_val_score(clf, X, y, cv=2)
 #    print(scores)
@@ -86,7 +87,7 @@ def regress_knn(X, y):
 
     scores = cross_validation.cross_val_score(regr, X, y, cv=5)
     print(scores)
-    print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
+    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
     
     
     
