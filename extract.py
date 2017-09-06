@@ -4,14 +4,18 @@ import numpy as np
 #Extracts molecular data
 #Returns an array of dictionaries containing molecular formula, positions, and energies
 #Indices
-def extract_molecular_data(dbName):
+def extract_molecular_data(dbName, dx=0):
     db = connect(dbName)
 
     data = []
     
     for row in db.select(relaxed = True):
         atoms = []
-        for i in range(len(row.numbers)):
+        sz = len(row.numbers)
+        hydrogenIdx = sz - 1 # hydrogen is always the last one
+        for i in range(sz):
+            if dx > 0 and calculate_distance(row, i, hydrogenIdx) > dx:
+                continue
             atom = {'num': row.numbers[i], 'position':row.positions[i]}
             atoms.append(atom)
             
@@ -20,6 +24,15 @@ def extract_molecular_data(dbName):
 
     return data
 
+def calculate_distance(row, atomA, atomB):
+    if atomA == atomB:
+        return 0
+    p1 = row.positions[atomA]
+    p2 = row.positions[atomB]
+    d = 0;
+    for i in range(3):
+        d = d + (p1[i]-p2[i])**2
+    return math.sqrt(d) 
 
 #Extracts molecule data
 #Returns as an array of arrays 
