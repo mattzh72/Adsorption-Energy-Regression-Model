@@ -14,7 +14,7 @@ from feat import extractTarget
 import numpy as np
 
 ##Get data
-data = extract_molecular_data('dE_H_1k.db', dx=4)
+data = extract_molecular_data('dE_H_1k.db', dx=5)
 X = featurize(data)
 #print(X[0])
 y = extractTarget(data)
