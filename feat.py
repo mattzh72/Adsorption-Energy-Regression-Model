@@ -25,10 +25,15 @@ def coulomb_matrix(molecule):
     
     for i in range(numAtoms):
         for j in range(numAtoms):
+            atomNumI = molecule["atoms"][i]["num"]
+            atomNumJ = molecule["atoms"][j]["num"]
             if i == j:
-                matrix[i, j] = 0.5 * molecule["atoms"][i]["num"]**2.4
+                matrix[i, j] = 0.5 * atomNumI**2.4
             elif i < j:
-                matrix[i, j] = (molecule["atoms"][i]["num"] * molecule["atoms"][j]["num"]) / calculate_atom_distance(molecule["atoms"][i]["position"], molecule["atoms"][j]["position"])
+                d = calculate_atom_distance(molecule["atoms"][i]["position"], molecule["atoms"][j]["position"])
+                #  Convert AtomPositions from Angstrom to bohr (atomic units)
+                d = d / (0.52917721092)
+                matrix[i, j] = (atomNumI * atomNumJ) / d
                 matrix[j, i] = matrix[i, j]
             else:
                 continue
@@ -66,7 +71,18 @@ def calculate_eigenvalues(molecule, max_num_atoms):
     
     return f
 
-def featurize(molecules): 
+def feat_coulombMatrix(molecule, max_atoms):
+    m = coulomb_matrix(molecule)
+    row_norms = np.asarray([np.linalg.norm(row) for row in m], dtype=float)
+    p = np.argsort(row_norms)
+    m = m[p][:, p]  # permute rows first, then columns
+    m = pad_array(m, max_atoms)
+    rval = m[np.triu_indices_from(m)]
+    # flatten into one list
+    rval = np.asarray(np.ravel(rval))
+    return rval
+
+def featurize(molecules, coulomb_eigen=True): 
     max_atoms = -1
     for mol in molecules:
         if (len(mol["atoms"]) > max_atoms):
@@ -74,7 +90,10 @@ def featurize(molecules):
     
     features = []
     for mol in molecules:
-        f = calculate_eigenvalues(mol, max_atoms)
+        if coulomb_eigen == True:
+            f = calculate_eigenvalues(mol, max_atoms)
+        else:
+            f = feat_coulombMatrix(mol, max_atoms)
         features.append(f)
         
     return features

@@ -2,24 +2,34 @@ from extract import extract_molecular_data, extract_molecular_distances
 from preprocess import encode_data
 from preprocess import label_data
 
-from regress import regress_knn
-from regress import regress_simple
-from regress import regress_Bayesian_ridge
-from regress import regress_SVR
-from regress import kernel_ridge_regress
+from regress import *
 
 from feat import featurize
 from feat import extractTarget
 
 import numpy as np
+import pickle    
 
-##Get data
-data = extract_molecular_data('dE_H_1k.db', dx=5)
-X = featurize(data)
-#print(X[0])
+## save/load data
+savedAlready = False 
+if savedAlready == False:
+    data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True)
+    with open('data.pickle', 'wb') as fp:
+        pickle.dump(data, fp)
+else:
+    with open('data.pickle', 'rb') as fp:
+        data = pickle.load(fp)
+
+# featurize the data        
+X = featurize(data, coulomb_eigen=True)
 y = extractTarget(data)
 
-kernel_ridge_regress(X, y)
+# run regression model
+#kernel_ridge_regress(X, y)
+#regress_Bayesian_ridge(X, y)
+#regress_knn(X,y)
+#regress_simple(X, y)
+regress_ridge(X, y)
 
 
 

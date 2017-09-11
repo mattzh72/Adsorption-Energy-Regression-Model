@@ -4,6 +4,8 @@ from sklearn import datasets, linear_model
 from sklearn.linear_model import BayesianRidge, LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import r2_score
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
 from sklearn import cross_validation
 from sklearn.svm import SVR
 from sklearn.kernel_ridge import KernelRidge
@@ -31,7 +33,10 @@ def regress_simple(X, y):
     regr = linear_model.LinearRegression()
 
     # Train the model using the training sets
-    regr.fit(X, y)
+    #regr.fit(X, y)
+
+    scores = cross_validation.cross_val_score(regr, X, y)
+    print(scores)
     
 ##A Bayesian Ridge Linear Regression
 def regress_Bayesian_ridge(X, y):
@@ -55,21 +60,23 @@ def regress_SVR(X, y, k):
     print ("Accuracy: %0.2f \(+/- %0.2f\)" % (scores.mean(), scores.std() / 2))
     
 def kernel_ridge_regress(X, y):
-    clf = GridSearchCV(estimator=KernelRidge(),param_grid=parameter_candidates)
-    clf.fit(X, y)
-    print(clf.score(X, y))
+    clf = GridSearchCV(estimator=KernelRidge(),param_grid=parameter_candidates, scoring='r2')
+    #clf.fit(X, y)
+    #    print(clf.score(X, y))
 
-"""
+    """
     print('Best score:', clf.best_score_)
     print('Best Kernel:', clf.best_estimator_.kernel)
     print('Best Gamma:', clf.best_estimator_.gamma)
     print('Best Alpha:', clf.best_estimator_.alpha)
-"""
+    """
     
-#    scores = cross_validation.cross_val_score(clf, X, y, cv=2)
-#    print(scores)
-#    print "Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2)
+    scores = cross_validation.cross_val_score(clf, X, y)
+    #scores = cross_validation.cross_val_score(clf, X, y, scoring='r2', cv=2)
+    print(scores)
+    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
 
+    
 ##A knn Regression
 def regress_knn(X, y):
     SPLIT_FACTOR = 50
@@ -89,5 +96,37 @@ def regress_knn(X, y):
     print(scores)
     print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
     
+    
+def regress_ridge(X, y):
+
+    splitFactor = [799, 899]
+    
+    # Split the data into training/testing sets
+    X_train = X[:splitFactor[0]]
+    y_train = y[:splitFactor[0]]
+    X_test = X[splitFactor[1]:]    
+    y_test = y[splitFactor[1]:]
+
+
+    # initiate kernel ridge
+    regr = KernelRidge(kernel="rbf", alpha=5e-4, gamma=0.008)
+    
+    # fit
+    regr.fit(X_train, y_train)
+
+    # check score
+    regress_score(regr, X_train, y_train, 'training')
+    regress_score(regr, X_test,  y_test,  'testing')
+    
+def regress_score(regr, X, y, header):
+        
+    # predict
+    y_pred = regr.predict(X)
+
+    r2Score = r2_score(y, y_pred)
+    meanAbsScore = mean_absolute_error(y, y_pred)
+    print("%s r2_score:%10.6f mean_absolute_error:%10.6f" % (header, r2Score, meanAbsScore))
+
+
     
     

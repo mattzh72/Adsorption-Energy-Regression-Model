@@ -151,7 +151,7 @@ def get_atom_neighborlist(atoms, centerAtom, dx=0.2, no_count_types=None):
 def get_molecular_aseDist(db, dx):
 
     data = []
-    
+
     for row in db.select(relaxed = True):
         atoms = row.toatoms()
         # H atom is always the last
