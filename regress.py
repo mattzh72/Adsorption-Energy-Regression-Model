@@ -60,21 +60,19 @@ def regress_SVR(X, y, k):
     print ("Accuracy: %0.2f \(+/- %0.2f\)" % (scores.mean(), scores.std() / 2))
     
 def kernel_ridge_regress(X, y):
-    clf = GridSearchCV(estimator=KernelRidge(),param_grid=parameter_candidates, scoring='r2')
-    #clf.fit(X, y)
-    #    print(clf.score(X, y))
+    clf = GridSearchCV(estimator=KernelRidge(),param_grid=parameter_candidates, scoring='neg_mean_absolute_error')
+    clf.fit(X, y)
+    print(clf.score(X, y))
 
-    """
     print('Best score:', clf.best_score_)
     print('Best Kernel:', clf.best_estimator_.kernel)
     print('Best Gamma:', clf.best_estimator_.gamma)
     print('Best Alpha:', clf.best_estimator_.alpha)
-    """
     
-    scores = cross_validation.cross_val_score(clf, X, y)
-    #scores = cross_validation.cross_val_score(clf, X, y, scoring='r2', cv=2)
+#    scores = cross_validation.cross_val_score(clf, X, y)
+    scores = cross_validation.cross_val_score(clf, X, y, scoring='neg_mean_absolute_error', cv=2)
     print(scores)
-    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+#    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
 
     
 ##A knn Regression
@@ -102,14 +100,15 @@ def regress_ridge(X, y):
     splitFactor = [799, 899]
     
     # Split the data into training/testing sets
-    X_train = X[:splitFactor[0]]
-    y_train = y[:splitFactor[0]]
+    X_train = X[:splitFactor[1]]
+    y_train = y[:splitFactor[1]]
     X_test = X[splitFactor[1]:]    
     y_test = y[splitFactor[1]:]
 
 
     # initiate kernel ridge
     regr = KernelRidge(kernel="rbf", alpha=5e-4, gamma=0.008)
+#    regr = KernelRidge(kernel="laplacian", alpha=1e-3, gamma=0.001)
     
     # fit
     regr.fit(X_train, y_train)

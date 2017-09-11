@@ -11,7 +11,7 @@ import numpy as np
 import pickle    
 
 ## save/load data
-savedAlready = False 
+savedAlready = True 
 if savedAlready == False:
     data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True)
     with open('data.pickle', 'wb') as fp:
@@ -21,11 +21,11 @@ else:
         data = pickle.load(fp)
 
 # featurize the data        
-X = featurize(data, coulomb_eigen=True)
+X = featurize(data, coulomb_eigen=False)
 y = extractTarget(data)
 
 # run regression model
-#kernel_ridge_regress(X, y)
+kernel_ridge_regress(X, y)
 #regress_Bayesian_ridge(X, y)
 #regress_knn(X,y)
 #regress_simple(X, y)
