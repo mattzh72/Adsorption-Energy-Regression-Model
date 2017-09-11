@@ -10,7 +10,10 @@ from feat import extractTarget
 import numpy as np
 import pickle    
 
-## save/load data
+""" save/load data
+if savedAlready, load from saved pickle file
+else extract from ase DB
+"""
 savedAlready = True 
 if savedAlready == False:
     data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True)
@@ -25,11 +28,8 @@ X = featurize(data, coulomb_eigen=False)
 y = extractTarget(data)
 
 # run regression model
-kernel_ridge_regress(X, y)
+#regress_simple(X, y)
 #regress_Bayesian_ridge(X, y)
 #regress_knn(X,y)
-#regress_simple(X, y)
+#kernel_ridge_regress(X, y)
 regress_ridge(X, y)
-
-
-

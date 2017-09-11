@@ -59,7 +59,9 @@ def calculateDistance(p1, p2):
         delta_sums += delta
         
     return math.sqrt(delta_sums)
-
+"""
+coulomb maxtrix eigin value based
+"""
 def calculate_eigenvalues(molecule, max_num_atoms):
     cmat = coulomb_matrix(molecule)
     w, v = np.linalg.eig(cmat)
@@ -71,6 +73,9 @@ def calculate_eigenvalues(molecule, max_num_atoms):
     
     return f
 
+"""
+directly use coulomb maxtrix as featurization
+"""
 def feat_coulombMatrix(molecule, max_atoms):
     m = coulomb_matrix(molecule)
     row_norms = np.asarray([np.linalg.norm(row) for row in m], dtype=float)
@@ -82,7 +87,13 @@ def feat_coulombMatrix(molecule, max_atoms):
     rval = np.asarray(np.ravel(rval))
     return rval
 
-def featurize(molecules, coulomb_eigen=True): 
+def featurize(molecules, coulomb_eigen=True):
+    """ coulomb matrix based featurization
+    Parameters
+    -----------
+    molecules: dictionary based molecules data
+    coulomb_eigen: True - use coulomb eigen. False - use coulomb directly
+    """
     max_atoms = -1
     for mol in molecules:
         if (len(mol["atoms"]) > max_atoms):

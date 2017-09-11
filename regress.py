@@ -22,12 +22,12 @@ parameter_candidates = [
 ##A Simple linear Regression
 def regress_simple(X, y):
     # Split the data into training/testing sets
-    X_train = X[:-20]
-    X_test = X[-20:]
+    X_train = X[:-100]
+    X_test = X[-100:]
 
     # Split the targets into training/testing sets
-    y_train = y[:-20]
-    y_test = y[-20:]  
+    y_train = y[:-100]
+    y_test = y[-100:]  
     
     # Create linear regression object
     regr = linear_model.LinearRegression()
@@ -35,27 +35,27 @@ def regress_simple(X, y):
     # Train the model using the training sets
     #regr.fit(X, y)
 
-    scores = cross_validation.cross_val_score(regr, X, y)
+    scores = cross_validation.cross_val_score(regr, X, y, scoring='neg_mean_absolute_error')
     print(scores)
     
 ##A Bayesian Ridge Linear Regression
 def regress_Bayesian_ridge(X, y):
     # Split the data into training/testing sets
-    X_train = X[:-10]
-    X_test = X[-10:]
+    X_train = X[:-100]
+    X_test = X[-100:]
 
     # Split the targets into training/testing sets
-    y_train = y[:-10]
-    y_test = y[-10:]  
+    y_train = y[:-100]
+    y_test = y[-100:]  
     
     clf = linear_model.BayesianRidge(n_iter=300, tol=0.00001, alpha_1=200, alpha_2=200, fit_intercept=False, normalize=True, copy_X=True, verbose=True)
-    scores = cross_validation.cross_val_score(clf, X, y, cv=5)
+    scores = cross_validation.cross_val_score(clf, X, y, scoring='neg_mean_absolute_error', cv=5)
     print(scores)
-    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+#    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
     
 def regress_SVR(X, y, k):
     svr = SVR(kernel=k, degree=5)
-    scores = cross_validation.cross_val_score(svr, X, y, cv=3)
+    scores = cross_validation.cross_val_score(svr, X, y, scoring='neg_mean_absolute_error', cv=3)
     print(scores)
     print ("Accuracy: %0.2f \(+/- %0.2f\)" % (scores.mean(), scores.std() / 2))
     
@@ -77,7 +77,7 @@ def kernel_ridge_regress(X, y):
     
 ##A knn Regression
 def regress_knn(X, y):
-    SPLIT_FACTOR = 50
+    SPLIT_FACTOR = 100
     
     # Split the data into training/testing sets
     X_train = X[:-SPLIT_FACTOR]
@@ -90,20 +90,23 @@ def regress_knn(X, y):
     # Create knn regression object
     regr = KNeighborsRegressor(61, "distance")
 
-    scores = cross_validation.cross_val_score(regr, X, y, cv=5)
+    scores = cross_validation.cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=5)
     print(scores)
-    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+#    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
     
-    
+""" 
+direct kernel ridge based regression
+use splitFactor to split training/testing data
+"""    
 def regress_ridge(X, y):
 
-    splitFactor = [799, 899]
+    splitFactor = 100
     
     # Split the data into training/testing sets
-    X_train = X[:splitFactor[1]]
-    y_train = y[:splitFactor[1]]
-    X_test = X[splitFactor[1]:]    
-    y_test = y[splitFactor[1]:]
+    X_train = X[:-splitFactor]
+    y_train = y[:-splitFactor]
+    X_test = X[-splitFactor:]    
+    y_test = y[-splitFactor:]
 
 
     # initiate kernel ridge
@@ -116,7 +119,10 @@ def regress_ridge(X, y):
     # check score
     regress_score(regr, X_train, y_train, 'training')
     regress_score(regr, X_test,  y_test,  'testing')
-    
+
+""" 
+report regression r2_score and mean_absolute_error score
+"""    
 def regress_score(regr, X, y, header):
         
     # predict
