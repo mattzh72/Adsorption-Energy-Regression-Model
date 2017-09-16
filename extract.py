@@ -30,7 +30,7 @@ def extract_molecular_data(dbName, dx=0, useAseDistance=False):
                 continue
             atom = {'num': row.numbers[i], 'position':row.positions[i]}
             atoms.append(atom)
-        print("orig size: %d  after my filtering %d" % (sz, len(atoms)))
+#        print("orig size: %d  after my filtering %d" % (sz, len(atoms)))
 #        print(atoms)
         molecule = {'atoms': atoms, 'energy': row.energy}
         data.append(molecule)
@@ -160,7 +160,7 @@ def get_molecular_aseDist(db, dx):
         atomData = []
         for a in nbAtoms:
             atomData.append( {'num': a.number, 'position':a.position} )
-        print("orig size: %d  after ase filtering %d" % (len(atoms), len(atomData)))
+#        print("orig size: %d  after ase filtering %d" % (len(atoms), len(atomData)))
 #        print(atomData)
         molecule = {'atoms': atomData, 'energy': row.energy}
         data.append(molecule)

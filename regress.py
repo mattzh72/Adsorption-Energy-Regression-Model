@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy as sp
+from utils import *
 from sklearn import datasets, linear_model
 from sklearn.linear_model import BayesianRidge, LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
@@ -14,9 +16,8 @@ from sklearn.model_selection import RandomizedSearchCV
 from sklearn.grid_search import GridSearchCV
 from sklearn.grid_search import RandomizedSearchCV
 
-parameter_candidates = [
-  {'gamma': [0.001, 0.0001], 'kernel': ['rbf', 'laplacian'], 'alpha': [0.0001,0.001,0.01,0.1,1]},
-]
+parameter_candidates = {'gamma': sp.stats.expon(scale=0.0001), 'kernel': ['rbf', 'laplacian'], 'alpha': sp.stats.expon(scale=0.0001)}
+
 
 
 ##A Simple linear Regression
@@ -82,24 +83,23 @@ def regress_knn(X, y):
     # Split the data into training/testing sets
     X_train = X[:-SPLIT_FACTOR]
     X_test = X[-SPLIT_FACTOR:]
-
-    # Split the targets into training/testing sets
     y_train = y[:-SPLIT_FACTOR]
     y_test = y[-SPLIT_FACTOR:]  
     
     # Create knn regression object
-    regr = KNeighborsRegressor(61, "distance")
+    regr = KNeighborsRegressor(899, "distance")
 
-    scores = cross_validation.cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=5)
-    print(scores)
-#    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+    regr.fit(X_train, y_train)
+
+    # check score
+    regress_score(regr, X_train, y_train, 'training')
+    regress_score(regr, X_test,  y_test,  'testing')
     
 """ 
 direct kernel ridge based regression
 use splitFactor to split training/testing data
 """    
 def regress_ridge(X, y):
-
     splitFactor = 100
     
     # Split the data into training/testing sets
@@ -110,7 +110,7 @@ def regress_ridge(X, y):
 
 
     # initiate kernel ridge
-    regr = KernelRidge(kernel="rbf", alpha=5e-4, gamma=0.008)
+    regr = KernelRidge(kernel="laplacian", alpha=5e-4, gamma=0.008)
 #    regr = KernelRidge(kernel="laplacian", alpha=1e-3, gamma=0.001)
     
     # fit
@@ -119,6 +119,18 @@ def regress_ridge(X, y):
     # check score
     regress_score(regr, X_train, y_train, 'training')
     regress_score(regr, X_test,  y_test,  'testing')
+    
+def regress_ridge_RandomSearchCV(X, y):
+    clf = KernelRidge()
+    
+    n_iter_search = 20
+    random_search = RandomizedSearchCV(clf,param_distributions=parameter_candidates, n_iter=n_iter_search)
+    random_search.fit(X, y)
+    
+    print('Best Kernel:', random_search.best_estimator_.kernel)
+    print('Best Gamma:', random_search.best_estimator_.gamma)
+    print('Best Alpha:', random_search.best_estimator_.alpha)
+#    report(random_search.cv_results_)
 
 """ 
 report regression r2_score and mean_absolute_error score

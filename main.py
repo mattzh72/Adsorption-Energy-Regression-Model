@@ -14,7 +14,7 @@ import pickle
 if savedAlready, load from saved pickle file
 else extract from ase DB
 """
-savedAlready = True 
+savedAlready = False 
 if savedAlready == False:
     data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True)
     with open('data.pickle', 'wb') as fp:
@@ -27,9 +27,12 @@ else:
 X = featurize(data, coulomb_eigen=False)
 y = extractTarget(data)
 
+#print(X[0])
+
 # run regression model
 #regress_simple(X, y)
 #regress_Bayesian_ridge(X, y)
 #regress_knn(X,y)
 #kernel_ridge_regress(X, y)
 regress_ridge(X, y)
+#regress_ridge_RandomSearchCV(X, y)
