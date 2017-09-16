@@ -14,9 +14,9 @@ import pickle
 if savedAlready, load from saved pickle file
 else extract from ase DB
 """
-savedAlready = False 
+savedAlready = True 
 if savedAlready == False:
-    data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True)
+    data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True, filterSigma=0)
     with open('data.pickle', 'wb') as fp:
         pickle.dump(data, fp)
 else:
@@ -24,7 +24,7 @@ else:
         data = pickle.load(fp)
 
 # featurize the data        
-X = featurize(data, coulomb_eigen=False)
+X = featurize(data, coulomb_eigen=True)
 y = extractTarget(data)
 
 #print(X[0])

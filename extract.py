@@ -12,12 +12,12 @@ import math
 #Extracts molecular data
 #Returns an array of dictionaries containing molecular formula, positions, and energies
 #Indices
-def extract_molecular_data(dbName, dx=0, useAseDistance=False):
+def extract_molecular_data(dbName, dx=0, useAseDistance=True, filterSigma=0):
     db = connect(dbName)
 
     # use ase get_mic_distance() to get neighboring atoms
     if useAseDistance == True:
-        return get_molecular_aseDist(db, dx)
+        return get_molecular_aseDist(db, dx, filterSigma)
     
     data = []
     
@@ -148,7 +148,7 @@ def get_atom_neighborlist(atoms, centerAtom, dx=0.2, no_count_types=None):
     return conn
 
 # use ase get_mic_distance() to get neighboring atoms
-def get_molecular_aseDist(db, dx):
+def get_molecular_aseDist(db, dx, filterSigma=0):
 
     data = []
 
@@ -161,11 +161,36 @@ def get_molecular_aseDist(db, dx):
         for a in nbAtoms:
             atomData.append( {'num': a.number, 'position':a.position} )
 #        print("orig size: %d  after ase filtering %d" % (len(atoms), len(atomData)))
-#        print(atomData)
         molecule = {'atoms': atomData, 'energy': row.energy}
         data.append(molecule)
 
+    # filter out bad data if needed
+    if filterSigma > 0:
+        data = filter_by_sigma(data, filterSigma)
+
+    print('total number of data: %d' % (len(data)))
+    
     return data
 
-
+# check if need to filter out bad data points out of number sigma 
+def filter_by_sigma(db, nSigma):
+    # save starting iterator
+    # calculate mean and sigma of atomization_energy
+    energyArr = []
+    for row in db:
+        energyArr.append(row["energy"])
+    mean = np.mean(energyArr)
+    sigma = np.std(energyArr)
+    # cut off at nSigma
+    leftCutOff  = mean - nSigma*sigma
+    rightCutOff = mean + nSigma*sigma
+    # filter and create new db
+    newDb = []
+    for row in db:
+        en = row["energy"]
+        if ( en >= leftCutOff and en <= rightCutOff):
+            newDb.append(row)
+        else:
+            print('filter out row with engergy %f with sigma %f' % (en, nSigma))
+    return newDb
     
