@@ -163,6 +163,7 @@ def get_molecular_aseDist(db, dx):
 #        print("orig size: %d  after ase filtering %d" % (len(atoms), len(atomData)))
 #        print(atomData)
         molecule = {'atoms': atomData, 'energy': row.energy}
+    
         data.append(molecule)
 
     return data
