@@ -10,8 +10,7 @@ from feat import extractTarget
 import numpy as np
 import pickle    
 
-from scipy.stats import uniform as sp_rand
-
+import scipy.stats as spst
 
 """ save/load data
 if savedAlready, load from saved pickle file
@@ -30,7 +29,9 @@ else:
 X = featurize(data, coulomb_eigen=True)
 y = extractTarget(data)
 
-param_dist = {'gamma': sp_rand(), 'kernel': ['rbf', 'laplacian'], 'alpha': sp_rand}
+a, b, c, z = 13.8, 3.12, 2.51, 5.18
+dist = spst.gausshyper(a, b, c, z)
+param_dist = {'gamma': dist, 'kernel': ['laplacian', 'rbf', 'polynomial'], 'alpha': dist}
 
 
 #print(X[0])
@@ -40,5 +41,5 @@ param_dist = {'gamma': sp_rand(), 'kernel': ['rbf', 'laplacian'], 'alpha': sp_ra
 #regress_Bayesian_ridge(X, y)
 #regress_knn(X,y)
 
-kernel_ridge_regress(X, y)
-#regress_ridge_RandomSearchCV(X, y, param_dist)
+#kernel_ridge_regress(X, y, alpha=0.0010382863386974028, gamma=0.16301281121644884)
+regress_ridge_RandomSearchCV(X, y, param_dist)

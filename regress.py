@@ -82,7 +82,7 @@ def kernel_ridge_regress(X, y, kernel="laplacian", alpha=0.0554063818372217965, 
     
     scores = cross_validation.cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
-    print ("Accuracy: %0.01f (+/- %0.01f)" % (scores.mean() * -1, scores.std() / 2))
+    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, scores.std() / 2))
     
     
 
