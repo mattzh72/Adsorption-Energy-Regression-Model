@@ -29,7 +29,7 @@ else:
 X = featurize(data, coulomb_eigen=True)
 y = extractTarget(data)
 
-param_dist = {'gamma': sp.stats.expon(scale=0.1), 'alpha': sp.stats.expon(scale=0.1)}
+param_dist = {'gamma': spst.expon(scale=0.01, loc=0.0007325085059569133), 'alpha': spst.expon(scale=0.01, loc=0.006087531857835262)}
 
 #print(X[0])
 
@@ -38,7 +38,5 @@ param_dist = {'gamma': sp.stats.expon(scale=0.1), 'alpha': sp.stats.expon(scale=
 #regress_Bayesian_ridge(X, y)
 #regress_knn(X,y)
 
-#kernel_ridge_regress(X, y, alpha=0.006087531857835262, gamma=0.0007325085059569133)
-regress_ridge_RandomSearchCV(X, y, param_dist)
-
-#alpha=0.0000010382863386974028, gamma=0.0016301281121644884
+kernel_ridge_regress(X, y, alpha=0.006087531857835262, gamma=0.0007325085059569133)
+#regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=200)
