@@ -58,25 +58,15 @@ def regress_SVR(X, y, k):
         
 ##A knn Regression
 def regress_knn(X, y):
-    SPLIT_FACTOR = 100
-    
-    # Split the data into training/testing sets
-    X_train = X[:-SPLIT_FACTOR]
-    X_test = X[-SPLIT_FACTOR:]
-    y_train = y[:-SPLIT_FACTOR]
-    y_test = y[-SPLIT_FACTOR:]  
-    
     # Create knn regression object
-    regr = KNeighborsRegressor(899, "distance")
+    regr = KNeighborsRegressor(869, "distance")
 
-    regr.fit(X_train, y_train)
-
-    # check score
-    regress_score(regr, X_train, y_train, 'training')
-    regress_score(regr, X_test,  y_test,  'testing')
+    scores = cross_validation.cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
+    print(scores)
+    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, scores.std() / 2))
     
 
-def kernel_ridge_regress(X, y, kernel="laplacian", alpha=0.0554063818372217965, gamma=0.01234923715677394):
+def kernel_ridge_regress(X, y, kernel="laplacian", alpha=5e-4, gamma=0.008):
     # initiate kernel ridge
     regr = KernelRidge(kernel=kernel, alpha=alpha, gamma=gamma)
     
@@ -86,13 +76,13 @@ def kernel_ridge_regress(X, y, kernel="laplacian", alpha=0.0554063818372217965, 
     
     
 
-def regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=100):
-    clf = KernelRidge()
+def regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=200):
+    clf = KernelRidge(kernel='laplacian')
     
     r_search = RandomizedSearchCV(clf,param_distributions=param_dist, n_iter=n_iter_search, cv=10, scoring='neg_mean_absolute_error')
     r_search.fit(X, y)
     
-    print("Best MAE: %0.01f" % r_search.best_score_)
+    print("Best MAE: %s" % r_search.best_score_)
     print("Best Parameters: %s" %r_search.best_params_)
     
     
