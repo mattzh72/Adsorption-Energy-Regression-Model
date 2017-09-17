@@ -19,7 +19,7 @@ else extract from ase DB
 """
 savedAlready = True 
 if savedAlready == False:
-    data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True)
+    data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True, filterSigma=0)
     with open('data.pickle', 'wb') as fp:
         pickle.dump(data, fp)
 else:
