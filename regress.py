@@ -8,7 +8,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
-from sklearn import cross_validation
+from sklearn.model_selection import cross_val_score
 from sklearn.svm import SVR
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.model_selection import GridSearchCV
@@ -32,7 +32,7 @@ def regress_simple(X, y):
     # Train the model using the training sets
     #regr.fit(X, y)
 
-    scores = cross_validation.cross_val_score(regr, X, y, scoring='neg_mean_absolute_error')
+    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error')
     print(scores)
     
 ##A Bayesian Ridge Linear Regression
@@ -49,19 +49,13 @@ def regress_Bayesian_ridge(X, y):
     scores = cross_validation.cross_val_score(clf, X, y, scoring='neg_mean_absolute_error', cv=5)
     print(scores)
 #    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
-    
-def regress_SVR(X, y, k):
-    svr = SVR(kernel=k, degree=5)
-    scores = cross_validation.cross_val_score(svr, X, y, scoring='neg_mean_absolute_error', cv=3)
-    print(scores)
-    print ("Accuracy: %0.2f \(+/- %0.2f\)" % (scores.mean(), scores.std() / 2))
         
 ##A knn Regression
 def regress_knn(X, y):
     # Create knn regression object
     regr = KNeighborsRegressor(869, "distance")
 
-    scores = cross_validation.cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
+    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, scores.std() / 2))
     
@@ -70,7 +64,7 @@ def kernel_ridge_regress(X, y, kernel="laplacian", alpha=5e-4, gamma=0.008):
     # initiate kernel ridge
     regr = KernelRidge(kernel=kernel, alpha=alpha, gamma=gamma)
     
-    scores = cross_validation.cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
+    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, scores.std() / 2))
     

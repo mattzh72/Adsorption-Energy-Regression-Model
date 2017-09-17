@@ -29,7 +29,7 @@ else:
 X = featurize(data, coulomb_eigen=True)
 y = extractTarget(data)
 
-param_dist = {'gamma': spst.expon(scale=0.01, loc=0.0007325085059569133), 'alpha': spst.expon(scale=0.01, loc=0.006087531857835262)}
+param_dist = {'gamma': spst.norm(scale=0.001), 'alpha': spst.norm(scale=0.0001)}
 
 #print(X[0])
 
