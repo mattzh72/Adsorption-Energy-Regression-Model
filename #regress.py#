@@ -8,13 +8,17 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import r2_score
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import cross_val_score
+from sklearn import cross_validation
 from sklearn.svm import SVR
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.grid_search import GridSearchCV
 from sklearn.grid_search import RandomizedSearchCV
+
+parameter_candidates = {'gamma': sp.stats.expon(scale=0.0001), 'kernel': ['rbf', 'laplacian'], 'alpha': sp.stats.expon(scale=0.0001)}
+
+
 
 ##A Simple linear Regression
 def regress_simple(X, y):
@@ -32,8 +36,9 @@ def regress_simple(X, y):
     # Train the model using the training sets
     #regr.fit(X, y)
 
-    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error')
+    scores = cross_validation.cross_val_score(regr, X, y, scoring='neg_mean_absolute_error')
     print(scores)
+    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
     
 ##A Bayesian Ridge Linear Regression
 def regress_Bayesian_ridge(X, y):
@@ -49,42 +54,53 @@ def regress_Bayesian_ridge(X, y):
     scores = cross_validation.cross_val_score(clf, X, y, scoring='neg_mean_absolute_error', cv=5)
     print(scores)
 #    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
-        
+    
+def regress_SVR(X, y, k):
+    svr = SVR(kernel=k, degree=5)
+    scores = cross_validation.cross_val_score(svr, X, y, scoring='neg_mean_absolute_error', cv=3)
+    print(scores)
+    print ("Accuracy: %0.2f \(+/- %0.2f\)" % (scores.mean(), scores.std() / 2))
+    
+def kernel_ridge_regress(X, y):
+    clf = GridSearchCV(estimator=KernelRidge(), param_grid=parameter_candidates, scoring='neg_mean_absolute_error')
+    clf.fit(X, y)
+    print(clf.score(X, y))
+
+    print('Best score:', clf.best_score_)
+    print('Best Kernel:', clf.best_estimator_.kernel)
+    print('Best Gamma:', clf.best_estimator_.gamma)
+    print('Best Alpha:', clf.best_estimator_.alpha)
+    
+#    scores = cross_validation.cross_val_score(clf, X, y)
+    scores = cross_validation.cross_val_score(clf, X, y, scoring='neg_mean_absolute_error', cv=10)
+    print(scores)
+    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std()))
+
+    
 ##A knn Regression
 def regress_knn(X, y):
+    SPLIT_FACTOR = 100
+    
+    # Split the data into training/testing sets
+    X_train = X[:-SPLIT_FACTOR]
+    X_test = X[-SPLIT_FACTOR:]
+    y_train = y[:-SPLIT_FACTOR]
+    y_test = y[-SPLIT_FACTOR:]  
+    
     # Create knn regression object
-    regr = KNeighborsRegressor(869, "distance")
+    regr = KNeighborsRegressor(899, "distance")
 
-    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
-    print(scores)
-    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, scores.std() / 2))
-    
+    regr.fit(X_train, y_train)
 
-def kernel_ridge_regress(X, y, kernel="laplacian", alpha=5e-4, gamma=0.008):
-    # initiate kernel ridge
-    regr = KernelRidge(kernel=kernel, alpha=alpha, gamma=gamma)
-    
-    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
-    print(scores)
-    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
-    
-    
-
-def regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=200):
-    clf = KernelRidge(kernel='laplacian')
-    
-    r_search = RandomizedSearchCV(clf,param_distributions=param_dist, n_iter=n_iter_search, cv=10, scoring='neg_mean_absolute_error')
-    r_search.fit(X, y)
-    
-    print("Best MAE: %s" % r_search.best_score_)
-    print("Best Parameters: %s" %r_search.best_params_)
+    # check score
+    regress_score(regr, X_train, y_train, 'training')
+    regress_score(regr, X_test,  y_test,  'testing')
     
 """ 
 direct kernel ridge based regression
 use splitFactor to split training/testing data
 """    
 def regress_ridge(X, y):
-
     splitFactor = 100
     
     # Split the data into training/testing sets
@@ -95,8 +111,14 @@ def regress_ridge(X, y):
 
 
     # initiate kernel ridge
-    regr = KernelRidge(kernel="rbf", alpha=5e-4, gamma=0.008)
-#    regr = KernelRidge(kernel="laplacian", alpha=1e-3, gamma=0.001)
+    ''' best configuration
+    1. coulomb_eigen=True, kernel="laplacian", alpha=5e-4, gamma=0.008, split 90/10
+    regr = KernelRidge(kernel="laplacian", alpha=5e-4, gamma=0.008) 
+
+    testing r2_score:  0.468280 mean_absolute_error:  0.255842
+    '''
+    regr = KernelRidge(kernel="laplacian", alpha=5e-4, gamma=0.008)  
+    #regr = KernelRidge(kernel="rbf", alpha=1.8e-4, gamma=1.9e-4)
     
     # fit
     regr.fit(X_train, y_train)
@@ -105,6 +127,18 @@ def regress_ridge(X, y):
     regress_score(regr, X_train, y_train, 'training')
     regress_score(regr, X_test,  y_test,  'testing')
     
+def regress_ridge_RandomSearchCV(X, y):
+    clf = KernelRidge()
+    
+    n_iter_search = 20
+    random_search = RandomizedSearchCV(clf,param_distributions=parameter_candidates, n_iter=n_iter_search)
+    random_search.fit(X, y)
+    
+    print('Best Kernel:', random_search.best_estimator_.kernel)
+    print('Best Gamma:', random_search.best_estimator_.gamma)
+    print('Best Alpha:', random_search.best_estimator_.alpha)
+#    report(random_search.cv_results_)
+
 """ 
 report regression r2_score and mean_absolute_error score
 """    

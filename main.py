@@ -16,9 +16,9 @@ import scipy.stats as spst
 if savedAlready, load from saved pickle file
 else extract from ase DB
 """
-savedAlready = True 
+savedAlready = True
 if savedAlready == False:
-    data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True, filterSigma=6)
+    data = extract_molecular_data('dE_H_1k.db', dx=1, useAseDistance=True, filterSigma=0)
     with open('data.pickle', 'wb') as fp:
         pickle.dump(data, fp)
 else:
@@ -26,7 +26,7 @@ else:
         data = pickle.load(fp)
 
 # featurize the data        
-X = featurize(data, coulomb_eigen=True)
+X = featurize(data, coulomb_eigen=True, coulomb_random_samples=0)
 y = extractTarget(data)
 
 param_dist = {'gamma': spst.norm(scale=0.001), 'alpha': spst.norm(scale=0.0001)}
@@ -37,6 +37,6 @@ param_dist = {'gamma': spst.norm(scale=0.001), 'alpha': spst.norm(scale=0.0001)}
 #regress_simple(X, y)
 #regress_Bayesian_ridge(X, y)
 #regress_knn(X,y)
-
+#regress_ridge(X, y)
 kernel_ridge_regress(X, y, alpha=0.006087531857835262, gamma=0.0007325085059569133)
 #regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=200)

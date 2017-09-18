@@ -74,6 +74,39 @@ def calculate_eigenvalues(molecule, max_num_atoms):
     return f
 
 """
+    Randomize a Coulomb matrix 
+"""
+def randomize_coulomb_matrix(m, numSamples=1):
+    """
+    Randomize a Coulomb matrix as decribed in Montavon et al., _New Journal
+    of Physics_ __15__ (2013) 095003:
+
+        1. Compute row norms for M in a vector row_norms.
+        2. Sample a zero-mean unit-variance noise vector e with dimension
+           equal to row_norms.
+        3. Permute the rows and columns of M with the permutation that
+           sorts row_norms + e.
+
+    Parameters
+    ----------
+    m : ndarray
+        Coulomb matrix.
+    n_samples : int, optional (default 1)
+        Number of random matrices to generate.
+    seed : int, optional
+        Random seed.    """
+    rval = []
+    row_norms = np.asarray([np.linalg.norm(row) for row in m], dtype=float)
+    rng = np.random.RandomState(0)
+    for i in range(numSamples):
+      e = rng.normal(size=row_norms.size)
+      p = np.argsort(row_norms + e)
+      #p = np.flip(p, 0) # reverse the order
+      new = m[p][:, p]  # permute rows first, then columns
+      rval.append(new)
+    return rval
+
+"""
 directly use coulomb maxtrix as featurization
 """
 def feat_coulombMatrix(molecule, max_atoms):
@@ -87,7 +120,21 @@ def feat_coulombMatrix(molecule, max_atoms):
     rval = np.asarray(np.ravel(rval))
     return rval
 
-def featurize(molecules, coulomb_eigen=True):
+"""
+use randomnized coulomb maxtrix as featurization
+"""
+def feat_random_coulombMatrix(molecule, max_atoms, numSamples=1):
+    origMatrix = coulomb_matrix(molecule)
+    rval = []
+    for m in randomize_coulomb_matrix(origMatrix, numSamples):
+        m = pad_array(m, max_atoms)
+        rval.append(m[np.triu_indices_from(m)])
+    # flatten into one list
+    rval = np.asarray(np.ravel(rval))
+    return rval
+
+
+def featurize(molecules, coulomb_eigen=True, coulomb_random_samples=0):
     """ coulomb matrix based featurization
     Parameters
     -----------
@@ -103,6 +150,8 @@ def featurize(molecules, coulomb_eigen=True):
     for mol in molecules:
         if coulomb_eigen == True:
             f = calculate_eigenvalues(mol, max_atoms)
+        elif coulomb_random_samples > 0:
+            f = feat_random_coulombMatrix(mol, max_atoms, coulomb_random_samples)
         else:
             f = feat_coulombMatrix(mol, max_atoms)
         features.append(f)
