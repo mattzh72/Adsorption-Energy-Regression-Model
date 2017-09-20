@@ -60,5 +60,5 @@ Best Parameters: {'epsilon': 0.10871593459397691, 'C': 1.524529776443795, 'gamma
 
 """
 
-SVR_regress(X, y, C=1.524529776443795, gamma=8.887647378544308e-07, epsilon=0.10871593459397691)
+#SVR_regress(X, y, C=1.524529776443795, gamma=8.887647378544308e-07, epsilon=0.10871593459397691)
 #SVR_RandomSearchCV(X, y, param_dist_SVR)
