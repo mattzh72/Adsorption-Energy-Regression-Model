@@ -59,6 +59,7 @@ def calculateDistance(p1, p2):
         delta_sums += delta
         
     return math.sqrt(delta_sums)
+
 """
 coulomb maxtrix eigin value based
 """

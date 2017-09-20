@@ -12,7 +12,7 @@ import math
 #Extracts molecular data
 #Returns an array of dictionaries containing molecular formula, positions, and energies
 #Indices
-def extract_molecular_data(dbName, dx=0, useAseDistance=True, filterSigma=0):
+def extract_molecular_data(dbName, dx=0, useAseDistance=True, filterSigma=0, removeOutliers = True):
     db = connect(dbName)
 
     # use ase get_mic_distance() to get neighboring atoms
@@ -33,6 +33,7 @@ def extract_molecular_data(dbName, dx=0, useAseDistance=True, filterSigma=0):
 #        print("orig size: %d  after my filtering %d" % (sz, len(atoms)))
 #        print(atoms)
         molecule = {'atoms': atoms, 'energy': row.energy}
+    
         data.append(molecule)
 
     return data
@@ -47,26 +48,6 @@ def calculate_distance(row, atomA, atomB):
         d = d + (p1[i]-p2[i])**2
 #    print ("dist %5.2f" % (math.sqrt(d)))
     return math.sqrt(d) 
-
-#Extracts molecule data
-#Returns as an array of arrays 
-#Inner arrays are organized as such:
-#index 0 contains formula, index 2 contains array of distances between hydrogen and other atoms, index 3 contains energy value
-def extract_molecular_distances(dbName):
-    db = connect(dbName)
-
-    molecules = []
-    
-    for row in db.select(relaxed = True):
-        if (row.energy < 100):
-            molecule = []
-            molecule.append(row.formula)
-            molecule.append(calculateDistances(row.positions[-1], row.positions))
-            molecule.append(row.energy)  
-            molecules.append(molecule)
-        
-    return molecules
-
 
 #Calculates distance between origin and all the points in array points
 def calculateDistances(origin, points):
@@ -148,7 +129,7 @@ def get_atom_neighborlist(atoms, centerAtom, dx=0.2, no_count_types=None):
     return conn
 
 # use ase get_mic_distance() to get neighboring atoms
-def get_molecular_aseDist(db, dx, filterSigma=0):
+def get_molecular_aseDist(db, dx, filterSigma=0, removeOutliers=True):
 
     data = []
 
@@ -163,7 +144,11 @@ def get_molecular_aseDist(db, dx, filterSigma=0):
 #        print("orig size: %d  after ase filtering %d" % (len(atoms), len(atomData)))
         molecule = {'atoms': atomData, 'energy': row.energy}
     
-        data.append(molecule)
+        if removeOutliers == True and math.fabs(molecule["energy"]) > 2:
+            print("Removed molecule with energy %s" % molecule["energy"])
+            continue
+        else:
+            data.append(molecule)
 
     # filter out bad data if needed
     if filterSigma > 0:

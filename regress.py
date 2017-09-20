@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 from utils import *
-from sklearn import datasets, linear_model
+from sklearn.dummy import DummyRegressor
+from sklearn import linear_model
 from sklearn.linear_model import BayesianRidge, LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.metrics import r2_score
@@ -11,44 +12,34 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import cross_val_score
 from sklearn.svm import SVR
 from sklearn.kernel_ridge import KernelRidge
-from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import RandomizedSearchCV
-from sklearn.grid_search import GridSearchCV
-from sklearn.grid_search import RandomizedSearchCV
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF, WhiteKernel, Matern, ConstantKernel as C
+
+def dummy_regressor(X, y):
+    regr = DummyRegressor()
+    
+    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
+    print(scores)
+    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+    
 
 ##A Simple linear Regression
 def regress_simple(X, y):
-    # Split the data into training/testing sets
-    X_train = X[:-100]
-    X_test = X[-100:]
-
-    # Split the targets into training/testing sets
-    y_train = y[:-100]
-    y_test = y[-100:]  
-    
     # Create linear regression object
     regr = linear_model.LinearRegression()
 
-    # Train the model using the training sets
-    #regr.fit(X, y)
-
-    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error')
+    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
+    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+
     
 ##A Bayesian Ridge Linear Regression
 def regress_Bayesian_ridge(X, y):
-    # Split the data into training/testing sets
-    X_train = X[:-100]
-    X_test = X[-100:]
-
-    # Split the targets into training/testing sets
-    y_train = y[:-100]
-    y_test = y[-100:]  
-    
     clf = linear_model.BayesianRidge(n_iter=300, tol=0.00001, alpha_1=200, alpha_2=200, fit_intercept=False, normalize=True, copy_X=True, verbose=True)
-    scores = cross_validation.cross_val_score(clf, X, y, scoring='neg_mean_absolute_error', cv=5)
+    scores = cross_val_score(clf, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
-#    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
         
 ##A knn Regression
 def regress_knn(X, y):
@@ -70,7 +61,7 @@ def kernel_ridge_regress(X, y, kernel="laplacian", alpha=5e-4, gamma=0.008):
     
     
 
-def regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=200):
+def regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=100):
     clf = KernelRidge(kernel='laplacian')
     
     r_search = RandomizedSearchCV(clf,param_distributions=param_dist, n_iter=n_iter_search, cv=10, scoring='neg_mean_absolute_error')
@@ -79,44 +70,32 @@ def regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=200):
     print("Best MAE: %s" % r_search.best_score_)
     print("Best Parameters: %s" %r_search.best_params_)
     
-""" 
-direct kernel ridge based regression
-use splitFactor to split training/testing data
-"""    
-def regress_ridge(X, y):
 
-    splitFactor = 100
+def gp_regress(X, y, kernel=None): 
+    gp = GaussianProcessRegressor(alpha = 0.00073, normalize_y=True)
     
-    # Split the data into training/testing sets
-    X_train = X[:-splitFactor]
-    y_train = y[:-splitFactor]
-    X_test = X[-splitFactor:]    
-    y_test = y[-splitFactor:]
-
-
-    # initiate kernel ridge
-    regr = KernelRidge(kernel="rbf", alpha=5e-4, gamma=0.008)
-#    regr = KernelRidge(kernel="laplacian", alpha=1e-3, gamma=0.001)
+    if (kernel != None):
+        gp = GaussianProcessRegressor(alpha = 0.00073, kernel=kernel, normalize_y=True, optimizer=None)
     
-    # fit
-    regr.fit(X_train, y_train)
-
-    # check score
-    regress_score(regr, X_train, y_train, 'training')
-    regress_score(regr, X_test,  y_test,  'testing')
+    scores = cross_val_score(gp, X, y,scoring='neg_mean_absolute_error', cv=10)
+    print(scores)
+    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
     
-""" 
-report regression r2_score and mean_absolute_error score
-"""    
-def regress_score(regr, X, y, header):
-        
-    # predict
-    y_pred = regr.predict(X)
+def SVR_regress(X, y, kernel='rbf', C=1e1, gamma=0.1, tol=1e-5, epsilon=0.1):
+    svr = SVR(kernel='rbf', C=C, gamma=gamma, epsilon=epsilon, tol=tol)
 
-    r2Score = r2_score(y, y_pred)
-    meanAbsScore = mean_absolute_error(y, y_pred)
-    print("%s r2_score:%10.6f mean_absolute_error:%10.6f" % (header, r2Score, meanAbsScore))
-
+    scores = cross_val_score(svr, X, y,scoring='neg_mean_absolute_error', cv=10)
+    print(scores)
+    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
+    
+def SVR_RandomSearchCV(X, y, param_dist, n_iter_search=100):
+    svr = SVR(kernel='rbf', tol=1e-5)
+    
+    r_search = RandomizedSearchCV(svr,param_distributions=param_dist, n_iter=n_iter_search, cv=10, scoring='neg_mean_absolute_error')
+    r_search.fit(X, y)
+    
+    print("Best MAE: %s" % r_search.best_score_)
+    print("Best Parameters: %s" %r_search.best_params_)
 
     
     
