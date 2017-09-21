@@ -21,7 +21,7 @@ def dummy_regressor(X, y):
     
     scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
-    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
     
 
 ##A Simple linear Regression
@@ -31,7 +31,7 @@ def regress_simple(X, y):
 
     scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
-    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
 
     
 ##A Bayesian Ridge Linear Regression
@@ -39,7 +39,7 @@ def regress_Bayesian_ridge(X, y):
     clf = linear_model.BayesianRidge(n_iter=300, tol=0.00001, alpha_1=200, alpha_2=200, fit_intercept=False, normalize=True, copy_X=True, verbose=True)
     scores = cross_val_score(clf, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
-    print ("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() / 2))
+    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
         
 ##A knn Regression
 def regress_knn(X, y):

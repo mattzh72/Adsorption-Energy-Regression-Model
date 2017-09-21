@@ -30,7 +30,7 @@ X = featurize(data, coulomb_eigen=True, coulomb_random_samples=0)
 y = extractTarget(data)
 
 #param_dist_kernel = {'gamma': spst.expon(scale=0.0001), 'alpha': spst.expon(scale=0.000001)}
-param_dist_SVR = {'C': spst.expon(scale=1), 'gamma': spst.expon(scale=0.000001), 'epsilon': spst.expon(0.001)}
+#param_dist_SVR = {'C': spst.expon(scale=1), 'gamma': spst.expon(scale=0.000001), 'epsilon': spst.expon(0.001)}
 
 
 #print(X[0])
@@ -39,7 +39,7 @@ param_dist_SVR = {'C': spst.expon(scale=1), 'gamma': spst.expon(scale=0.000001),
 #dummy_regressor(X, y)
 #regress_simple(X, y)
 #regress_Bayesian_ridge(X, y)
-#regress_knn(X,y)
+regress_knn(X,y)
 
 ##0.212755658269
 #kernel_ridge_regress(X, y, alpha=0.006087531857835262, gamma=0.0007325085059569133)
