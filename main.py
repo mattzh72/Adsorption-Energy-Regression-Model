@@ -31,6 +31,7 @@ y = extractTarget(data)
 
 #param_dist_kernel = {'gamma': spst.expon(scale=0.0001), 'alpha': spst.expon(scale=0.000001)}
 #param_dist_SVR = {'C': spst.expon(scale=1), 'gamma': spst.expon(scale=0.000001), 'epsilon': spst.expon(0.001)}
+param_dist_Bayesian_ridge = {'alpha_1':spst.expon(scale=1e-10), 'alpha_2':spst.expon(scale=1e-10), 'lambda_1': spst.expon(scale=1e-4), 'lambda_2': spst.expon(scale=1e-10)}
 
 
 #print(X[0])
@@ -38,8 +39,9 @@ y = extractTarget(data)
 # run regression model
 #dummy_regressor(X, y)
 #regress_simple(X, y)
-#regress_Bayesian_ridge(X, y)
-regress_knn(X,y)
+regress_Bayesian_ridge(X, y, alpha_2=3.218290550214049e-05, lambda_1=6.633380980280872e-05, lambda_2=6.312410500509716e-05, alpha_1=4.494947658665962e-05)
+#regress_Bayesian_ridge_RandomSearchCV(X, y, param_dist_Bayesian_ridge)
+#regress_knn(X,y)
 
 ##0.212755658269
 #kernel_ridge_regress(X, y, alpha=0.006087531857835262, gamma=0.0007325085059569133)

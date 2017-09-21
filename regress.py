@@ -35,11 +35,20 @@ def regress_simple(X, y):
 
     
 ##A Bayesian Ridge Linear Regression
-def regress_Bayesian_ridge(X, y):
-    clf = linear_model.BayesianRidge(n_iter=300, tol=0.00001, alpha_1=200, alpha_2=200, fit_intercept=False, normalize=True, copy_X=True, verbose=True)
-    scores = cross_val_score(clf, X, y, scoring='neg_mean_absolute_error', cv=10)
+def regress_Bayesian_ridge(X, y, alpha_1=1e-6,alpha_2=1e-6,lambda_1=1e-6,lambda_2=1e-6,):
+    regr = linear_model.BayesianRidge(n_iter=300, tol=0.00001, alpha_1=alpha_1, alpha_2=alpha_2, lambda_1=lambda_1, lambda_2=lambda_2, fit_intercept=False, normalize=True, copy_X=True, verbose=True)
+    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
+    
+def regress_Bayesian_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=100):
+    regr = linear_model.BayesianRidge(n_iter=300, tol=1e-10, fit_intercept=False)
+    
+    r_search = RandomizedSearchCV(regr,param_distributions=param_dist, n_iter=n_iter_search, cv=10, scoring='neg_mean_absolute_error')
+    r_search.fit(X, y)
+    
+    print("Best MAE: %s" % r_search.best_score_)
+    print("Best Parameters: %s" %r_search.best_params_)
         
 ##A knn Regression
 def regress_knn(X, y):
@@ -62,9 +71,9 @@ def kernel_ridge_regress(X, y, kernel="laplacian", alpha=5e-4, gamma=0.008):
     
 
 def regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=100):
-    clf = KernelRidge(kernel='laplacian')
+    regr = KernelRidge(kernel='laplacian')
     
-    r_search = RandomizedSearchCV(clf,param_distributions=param_dist, n_iter=n_iter_search, cv=10, scoring='neg_mean_absolute_error')
+    r_search = RandomizedSearchCV(regr,param_distributions=param_dist, n_iter=n_iter_search, cv=10, scoring='neg_mean_absolute_error')
     r_search.fit(X, y)
     
     print("Best MAE: %s" % r_search.best_score_)
