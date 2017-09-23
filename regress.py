@@ -23,6 +23,8 @@ def dummy_regressor(X, y):
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
     
+    return regr
+    
 
 ##A Simple linear Regression
 def regress_simple(X, y):
@@ -32,14 +34,19 @@ def regress_simple(X, y):
     scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
+    
+    return regr
 
     
 ##A Bayesian Ridge Linear Regression
 def regress_Bayesian_ridge(X, y, alpha_1=1e-6,alpha_2=1e-6,lambda_1=1e-6,lambda_2=1e-6,):
     regr = linear_model.BayesianRidge(n_iter=300, tol=0.00001, alpha_1=alpha_1, alpha_2=alpha_2, lambda_1=lambda_1, lambda_2=lambda_2, fit_intercept=False, normalize=True, copy_X=True, verbose=True)
+    
     scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
+    
+    return regr
     
 def regress_Bayesian_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=100):
     regr = linear_model.BayesianRidge(n_iter=300, tol=1e-10, fit_intercept=False)
@@ -49,6 +56,7 @@ def regress_Bayesian_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=100):
     
     print("Best MAE: %s" % r_search.best_score_)
     print("Best Parameters: %s" %r_search.best_params_)
+    
         
 ##A knn Regression
 def regress_knn(X, y):
@@ -59,6 +67,8 @@ def regress_knn(X, y):
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, scores.std() / 2))
     
+    return regr
+    
 
 def kernel_ridge_regress(X, y, kernel="laplacian", alpha=5e-4, gamma=0.008):
     # initiate kernel ridge
@@ -67,6 +77,8 @@ def kernel_ridge_regress(X, y, kernel="laplacian", alpha=5e-4, gamma=0.008):
     scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
+    
+    return regr
     
     
 
@@ -90,12 +102,16 @@ def gp_regress(X, y, kernel=None):
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
     
+    return gp
+    
 def SVR_regress(X, y, kernel='rbf', C=1e1, gamma=0.1, tol=1e-5, epsilon=0.1):
     svr = SVR(kernel='rbf', C=C, gamma=gamma, epsilon=epsilon, tol=tol)
 
     scores = cross_val_score(svr, X, y,scoring='neg_mean_absolute_error', cv=10)
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
+    
+    return svr
     
 def SVR_RandomSearchCV(X, y, param_dist, n_iter_search=100):
     svr = SVR(kernel='rbf', tol=1e-5)

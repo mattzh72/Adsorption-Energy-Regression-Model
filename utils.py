@@ -1,5 +1,7 @@
 import numpy as np
 import math
+from sklearn.model_selection import KFold
+from sklearn.metrics import mean_absolute_error
 
 def removeOuts(molecules):
     srtdenergies = []
@@ -32,8 +34,52 @@ def removeOut(nums):
             
     return newNums
 
+def getSplits(X, y):
+    X_folds = np.array_split(X, 10)
+    y_folds = np.array_split(y, 10)
+    
+    train = []
+    train_target = []
+    test = []
+    test_target = []
+    
+    for i in range(0, 10):
+        tr = []
+        tgt = []
         
+        for j in range(0, 10):
+            if j != i:
+                if len(tr) == 0:
+                    tr = X_folds[j]
+                else:
+                    tr = np.concatenate((tr, X_folds[j]), axis=0)
+            
+                tgt = np.append(tgt, y_folds[j])
+        
+        train.append(tr)
+        train_target.append(tgt)
+        
+        test.append(X_folds[i])
+        test_target.append(y_folds[i])
+        
+    return train, train_target, test, test_target
 
+def getPredictionsAndActual(regr, X, y):
+    train, train_target, test, test_target = getSplits(X, y)
+    
+    predicted = []
+    actual = []
+    
+    for i in range(0, 10):
+        regr.fit(train[i], train_target[i])
+        predicted = np.append(predicted, regr.predict(test[i]))
+        actual = np.append(actual, test_target[i])
+        
+    print("MAE is %s" % mean_absolute_error(actual, predicted))
+    print(len(actual))
+    print(len(predicted))
+        
+    return predicted, actual
 
 def removeOutliers(x, outlierConstant):
     a = np.array(x)

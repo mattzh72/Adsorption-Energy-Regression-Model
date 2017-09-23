@@ -4,6 +4,8 @@ from preprocess import label_data
 
 from regress import *
 
+from utils import *
+
 from feat import featurize
 from feat import extractTarget
 
@@ -26,7 +28,7 @@ else:
         data = pickle.load(fp)
 
 # featurize the data        
-X = featurize(data, coulomb_eigen=True, coulomb_random_samples=8)
+X = featurize(data, coulomb_eigen=True, coulomb_random_samples=0)
 y = extractTarget(data)
 
 #param_dist_kernel = {'gamma': spst.expon(scale=0.0001), 'alpha': spst.expon(scale=0.000001)}
@@ -46,14 +48,15 @@ y = extractTarget(data)
 ##0.212755658269
 #kernel_ridge_regress(X, y, alpha=0.006087531857835262, gamma=0.0007325085059569133)
 ##0.211291183164
-#kernel_ridge_regress(X, y, alpha=6.81901586710227e-06, gamma=0.000575920215580223)
+krr = kernel_ridge_regress(X, y, alpha=6.81901586710227e-06, gamma=0.000575920215580223)
+getPredictionsAndActual(krr, X, y)
 
 #regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=100)
 
 #kernel_RBF = C(constant_value=300) + WhiteKernel(noise_level=0.025) + RBF(length_scale=1050) 
-kernel_Matern = C(constant_value=1e2) + Matern(length_scale=2500, nu=0.2)
+#kernel_Matern = C(constant_value=1e2) + Matern(length_scale=2500, nu=0.2)
 #kernel_Matern_RBF = C(constant_value=1e2) + Matern(length_scale=2500, nu=0.2) + RBF(length_scale=3.3e3)
-gp_regress(X, y, kernel_Matern)
+#gp_regress(X, y, kernel_Matern)
 
 """
 
