@@ -26,12 +26,12 @@ else:
         data = pickle.load(fp)
 
 # featurize the data        
-X = featurize(data, coulomb_eigen=True, coulomb_random_samples=0)
+X = featurize(data, coulomb_eigen=True, coulomb_random_samples=8)
 y = extractTarget(data)
 
 #param_dist_kernel = {'gamma': spst.expon(scale=0.0001), 'alpha': spst.expon(scale=0.000001)}
 #param_dist_SVR = {'C': spst.expon(scale=1), 'gamma': spst.expon(scale=0.000001), 'epsilon': spst.expon(0.001)}
-param_dist_Bayesian_ridge = {'alpha_1':spst.expon(scale=1e-10), 'alpha_2':spst.expon(scale=1e-10), 'lambda_1': spst.expon(scale=1e-4), 'lambda_2': spst.expon(scale=1e-10)}
+#param_dist_Bayesian_ridge = {'alpha_1':spst.expon(scale=1e-10), 'alpha_2':spst.expon(scale=1e-10), 'lambda_1': spst.expon(scale=1e-4), 'lambda_2': spst.expon(scale=1e-10)}
 
 
 #print(X[0])
@@ -39,7 +39,7 @@ param_dist_Bayesian_ridge = {'alpha_1':spst.expon(scale=1e-10), 'alpha_2':spst.e
 # run regression model
 #dummy_regressor(X, y)
 #regress_simple(X, y)
-regress_Bayesian_ridge(X, y, alpha_2=3.218290550214049e-05, lambda_1=6.633380980280872e-05, lambda_2=6.312410500509716e-05, alpha_1=4.494947658665962e-05)
+#regress_Bayesian_ridge(X, y, alpha_2=3.218290550214049e-05, lambda_1=6.633380980280872e-05, lambda_2=6.312410500509716e-05, alpha_1=4.494947658665962e-05)
 #regress_Bayesian_ridge_RandomSearchCV(X, y, param_dist_Bayesian_ridge)
 #regress_knn(X,y)
 
@@ -51,9 +51,9 @@ regress_Bayesian_ridge(X, y, alpha_2=3.218290550214049e-05, lambda_1=6.633380980
 #regress_ridge_RandomSearchCV(X, y, param_dist, n_iter_search=100)
 
 #kernel_RBF = C(constant_value=300) + WhiteKernel(noise_level=0.025) + RBF(length_scale=1050) 
-#kernel_Matern = C(constant_value=1e2) + Matern(length_scale=2500, nu=0.2)
+kernel_Matern = C(constant_value=1e2) + Matern(length_scale=2500, nu=0.2)
 #kernel_Matern_RBF = C(constant_value=1e2) + Matern(length_scale=2500, nu=0.2) + RBF(length_scale=3.3e3)
-#gp_regress(X, y, kernel_Matern_RBF)
+gp_regress(X, y, kernel_Matern)
 
 """
 
