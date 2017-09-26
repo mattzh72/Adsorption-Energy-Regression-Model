@@ -21,7 +21,7 @@ def dummy_regressor(X, y):
     
     scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
     print(scores)
-    print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
+    print ("Accuracy: %0.3f (+/- %0.3f)" % (scores.mean() * -1, -scores.std()))
     
     return regr
     
@@ -31,7 +31,7 @@ def regress_simple(X, y):
     # Create linear regression object
     regr = linear_model.LinearRegression()
 
-    scores = cross_val_score(regr, X, y, scoring='neg_mean_absolute_error', cv=10)
+    scores = cross_val_score(regr, X, y, cv=10)
     print(scores)
     print ("Accuracy: %s (+/- %s)" % (scores.mean() * -1, -scores.std()))
     
